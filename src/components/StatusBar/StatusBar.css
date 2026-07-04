@@ -1,0 +1,151 @@
+.status-bar {
+  height: 48px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-lg);
+  gap: var(--space-md);
+  flex-shrink: 0;
+  z-index: var(--z-sticky);
+  /* Zona arrastrable de Electron (permite mover la ventana) */
+  -webkit-app-region: drag;
+}
+
+/* Los elementos interactivos deben ser no-drag */
+.status-bar button,
+.status-bar__time {
+  -webkit-app-region: no-drag;
+}
+
+/* ─── Brand ─────────────────────────────────────────────────────────── */
+/* Asegura que la marca (logo + nombre) esté alineada verticalmente */
+.status-bar__brand {
+  display: flex;
+  align-items: center;    /* Centra el ícono y el texto verticalmente */
+  gap: 8px;               /* Espacio entre el ícono y el nombre */
+}
+
+/* Contenedor del ícono - TAMAÑO FIJO AQUÍ */
+.status-bar__icon {
+  display: inline-flex;          /* Para centrar la imagen dentro */
+  align-items: center;
+  justify-content: center;
+  width: 28px;                   /* <-- Cambia este valor (ej: 24px, 32px) */
+  height: 28px;                  /* <-- Cambia este valor */
+  flex-shrink: 0;               /* Evita que el span se encoja si el texto es largo */
+}
+
+/* La imagen se adapta al contenedor sin deformarse */
+.status-bar__icon img {
+  width: 100%;                  /* Ocupa todo el ancho del span */
+  height: 100%;                 /* Ocupa todo el alto del span */
+  object-fit: contain;         /* La imagen se ajusta sin estirarse ni cortarse */
+  display: block;              /* Elimina el espacio extra que deja la imagen por defecto */
+}
+
+.status-bar__name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: .5px;
+}
+
+/* ─── Centro ────────────────────────────────────────────────────────── */
+.status-bar__center {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+/* ─── Badge de conexión ─────────────────────────────────────────────── */
+.connection-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.connection-badge--online {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.connection-badge--offline {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.connection-badge__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: currentColor;
+  position: relative;
+}
+
+.connection-badge--online .connection-badge__dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--success);
+  animation: pulse-ring 1.5s ease infinite;
+}
+
+/* ─── Botón sync ─────────────────────────────────────────────────────── */
+.sync-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--warning-bg);
+  color: var(--warning);
+  border: 1px solid var(--warning);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  -webkit-app-region: no-drag;
+}
+
+.sync-btn:hover:not(:disabled) {
+  background: var(--warning);
+  color: var(--text-inverse);
+}
+
+.sync-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.sync-btn__icon {
+  font-size: 14px;
+  display: inline-block;
+  transition: transform var(--transition-fast);
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ─── Sync ok ───────────────────────────────────────────────────────── */
+.status-bar__sync-ok {
+  font-size: 12px;
+  color: var(--success);
+}
+
+/* ─── Hora ──────────────────────────────────────────────────────────── */
+.status-bar__time {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .5px;
+}

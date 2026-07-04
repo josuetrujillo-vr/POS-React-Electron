@@ -1,0 +1,314 @@
+/* ═══════════════════════════════════════════════════════════════════
+   POS Vaquero — Módulo de Reportes Visuales
+   ═══════════════════════════════════════════════════════════════════ */
+
+.reports-screen {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--bg-base);
+  padding: var(--space-xl);
+}
+
+.reports-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* ─── Encabezado ─── */
+.reports-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--space-md);
+}
+
+.reports-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.reports-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* ─── Selector de Períodos ─── */
+.period-selector {
+  display: flex;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  gap: 4px;
+  box-shadow: var(--shadow-sm);
+}
+
+.period-btn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.period-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.period-btn--active {
+  color: var(--text-inverse);
+  background: linear-gradient(135deg, var(--brand-gold) 0%, var(--brand-amber) 100%);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ─── KPIs Grid ─── */
+.reports-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-md);
+}
+
+.kpi-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+  border-left: 4px solid var(--border);
+}
+
+.kpi-card:nth-child(1) { border-left-color: var(--brand-gold); }
+.kpi-card:nth-child(2) { border-left-color: var(--info); }
+.kpi-card:nth-child(3) { border-left-color: var(--success); }
+
+.kpi-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.kpi-card__title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.kpi-card__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kpi-card__icon--gold    { background: rgba(217, 119, 6, 0.1); color: var(--brand-gold); }
+.kpi-card__icon--info    { background: rgba(37, 99, 235, 0.1); color: var(--info); }
+.kpi-card__icon--success { background: rgba(5, 150, 105, 0.1); color: var(--success); }
+
+.kpi-card__value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.kpi-card__footer {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ─── Dashboard Panel Grid ─── */
+.reports-dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: var(--space-lg);
+}
+
+@media (max-width: 1024px) {
+  .reports-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.reports-panel-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ─── Gráfica SVG ─── */
+.reports-chart-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.svg-chart-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+}
+
+/* Tooltip de Gráfica */
+.chart-tooltip {
+  background: rgba(26, 18, 8, 0.9);
+  border: 1px solid var(--brand-gold);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  box-shadow: var(--shadow-lg), 0 0 10px rgba(217, 119, 6, 0.2);
+  color: white;
+  z-index: 100;
+  text-align: center;
+  backdrop-filter: blur(4px);
+}
+
+.chart-tooltip__label {
+  font-size: 11px;
+  color: #ccc;
+  margin-bottom: 2px;
+  white-space: nowrap;
+}
+
+.chart-tooltip__value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--border-gold);
+}
+
+/* ─── Productos Más Vendidos ─── */
+.reports-top-products {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.top-product-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.top-product-row__info {
+  display: flex;
+  align-items: center;
+  font-size: 13.5px;
+}
+
+.top-product-row__rank {
+  width: 20px;
+  height: 20px;
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  margin-right: 8px;
+}
+
+.top-product-row:nth-child(1) .top-product-row__rank { background: rgba(217, 119, 6, 0.2); color: var(--brand-brown); }
+.top-product-row:nth-child(2) .top-product-row__rank { background: rgba(217, 119, 6, 0.15); color: var(--brand-gold-dk); }
+.top-product-row:nth-child(3) .top-product-row__rank { background: rgba(217, 119, 6, 0.1); color: var(--brand-gold); }
+
+.top-product-row__name {
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: var(--space-sm);
+}
+
+.top-product-row__qty {
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.top-product-row__bar-container {
+  height: 8px;
+  background: var(--bg-hover);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.top-product-row__bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--brand-gold) 0%, var(--brand-amber) 100%);
+  border-radius: var(--radius-full);
+  transition: width 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.top-product-row:hover .top-product-row__bar {
+  opacity: 0.85;
+}
+
+.top-product-row__revenue {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+/* ─── Estados de Carga y Vacío ─── */
+.reports-loading-state,
+.reports-empty-state,
+.reports-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl) var(--space-lg);
+  text-align: center;
+  gap: var(--space-md);
+  background: var(--bg-surface);
+}
+
+.reports-loading-state {
+  min-height: 400px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.reports-loading-spinner {
+  color: var(--brand-gold);
+}
+
+.reports-empty-state h3,
+.reports-error-state h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 4px;
+}
+
+.reports-empty-state p,
+.reports-error-state p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 480px;
+}

@@ -1,0 +1,166 @@
+.settings-screen {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-lg);
+}
+
+.settings-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.settings-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--text-primary);
+}
+
+/* ─── Sections ───────────────────────────────────────────────────────── */
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.settings-section__title {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--brand-gold);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-section--future {
+  border-color: var(--border-gold);
+  background: rgba(201,146,42,.04);
+}
+
+/* ─── Fields ─────────────────────────────────────────────────────────── */
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.settings-field label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.settings-field__hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ─── Radio group ────────────────────────────────────────────────────── */
+.settings-radio-group {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.radio-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.radio-option input[type="radio"] { display: none; }
+
+.radio-option:hover {
+  border-color: var(--border-gold);
+  color: var(--text-primary);
+}
+
+.radio-option--active {
+  border-color: var(--brand-gold);
+  background: rgba(201,146,42,.1);
+  color: var(--brand-gold-lt);
+}
+
+/* ─── Test print ─────────────────────────────────────────────────────── */
+.settings-test-print {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.settings-test-status {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.settings-test-status--ok  { color: var(--success); }
+.settings-test-status--err { color: var(--danger); }
+
+/* ─── Note ───────────────────────────────────────────────────────────── */
+.settings-note {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--brand-gold-dk);
+}
+
+/* ─── Future features ────────────────────────────────────────────────── */
+.future-features {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.future-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+}
+
+.future-feature__icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.future-feature strong {
+  font-size: 14px;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.future-feature p {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.future-feature .badge {
+  margin-left: auto;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+/* ─── Actions ────────────────────────────────────────────────────────── */
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: var(--space-xl);
+}
