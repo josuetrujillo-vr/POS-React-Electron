@@ -1,4 +1,4 @@
-# POS Vaquero 🤠
+# POS Vaquero
 
 Sistema de punto de venta **offline-first** para local de ropa vaquera. Construido con React + Electron.
 
