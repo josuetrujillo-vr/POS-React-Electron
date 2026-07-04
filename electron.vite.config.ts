@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
 
 export default defineConfig({
-  // ─── Proceso Principal (Node/Electron) ────────────────────────────────────
   main: {
     plugins: [externalizeDepsPlugin()],
     build: {
@@ -11,11 +10,10 @@ export default defineConfig({
         input: {
           index: resolve(__dirname, 'electron/main.ts')
         }
+        // No es necesario agregar external aquí porque externalizeDepsPlugin ya lo hace
       }
     }
   },
-
-  // ─── Preload Script ────────────────────────────────────────────────────────
   preload: {
     plugins: [externalizeDepsPlugin()],
     build: {
@@ -26,8 +24,6 @@ export default defineConfig({
       }
     }
   },
-
-  // ─── Renderer (React) ─────────────────────────────────────────────────────
   renderer: {
     root: '.',
     base: './',
