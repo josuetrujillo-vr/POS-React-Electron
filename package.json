@@ -43,6 +43,12 @@
     "directories": {
       "output": "dist"
     },
+    "extraResources": [
+      {
+        "from": "server-local",
+        "to": "server-local"
+      }
+    ],
     "win": {
       "target": "nsis"
     },

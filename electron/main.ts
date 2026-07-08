@@ -1,12 +1,11 @@
 import { app, BrowserWindow, ipcMain, shell, nativeTheme } from 'electron'
 import { join } from 'path'
+import { fork, ChildProcess } from 'child_process'
 import { setupPrinterHandlers } from './ipc/printer'
 import { setupSyncHandlers } from './ipc/sync'
 
-// ─── Seguridad: deshabilitar remote module ─────────────────────────────────
-// (ya deshabilitado por defecto en Electron 14+)
-
 let mainWindow: BrowserWindow | null = null
+let serverProcess: ChildProcess | null = null
 
 /**
  * Crea la ventana principal de la aplicación.
@@ -53,20 +52,42 @@ function createWindow(): void {
   })
 }
 
+// ─── Sync server como child process ────────────────────────────────────────
+function startSyncServer(): void {
+  if (app.isPackaged) {
+    const serverPath = join(process.resourcesPath, 'server-local', 'index.js')
+    serverProcess = fork(serverPath, { stdio: 'pipe' })
+    serverProcess.on('error', (err) => console.error('[Main] Sync server error:', err))
+    serverProcess.on('exit', (code) => {
+      console.log(`[Main] Sync server exited with code ${code}`)
+      serverProcess = null
+    })
+  }
+}
+
+function stopSyncServer(): void {
+  if (serverProcess) {
+    serverProcess.kill()
+    serverProcess = null
+  }
+}
+
 // ─── Ciclo de vida de la app ───────────────────────────────────────────────
 app.whenReady().then(() => {
-  // Preferir tema oscuro
   nativeTheme.themeSource = 'dark'
 
+  startSyncServer()
   createWindow()
-
-  // Registrar handlers IPC para impresora y sincronización
   setupPrinterHandlers()
   setupSyncHandlers()
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+})
+
+app.on('before-quit', () => {
+  stopSyncServer()
 })
 
 app.on('window-all-closed', () => {
