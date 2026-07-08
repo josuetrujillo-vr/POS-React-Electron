@@ -1,39 +1,109 @@
-# TODO - AppVentas (Sync, Inventario y Reportes)
+# TODO - Gestión de Inventario
 
-## Problema 1: Sincronización independiente de impresión
-- [ ] 1.1 Revisar `src/services/syncService.ts`: actualizar `syncOne` para que haga `await flushQueue()` (evitar acoplar sync a timing/UI).
-- [ ] 1.2 Agregar logging más detallado en `flushQueue` sobre elegibilidad por backoff (attempts/lastAttempt) y resultados por venta.
-- [ ] 1.3 Revisar `src/store/syncStore.ts`: asegurar que `forceSync` no dispare múltiples flush simultáneos (mantener/ajustar `isSyncing`).
-- [ ] 1.4 Verificar que `useOnlineStatus` dispare sync automáticamente al recuperar conexión sin bloquear por impresión.
+Basado en la tabla de "Características futuras (documentadas)" del README: `src/screens/InventoryScreen/` — Pendiente.
 
-## Problema 2: Límite de productos en carrito y click directo
-- [ ] 2.1 Implementar validación centralizada en `src/store/cartStore.ts`:
-  - [ ] helper `getCartQty(productId)`
-  - [ ] helper `canSetQuantity(productId, desiredQty)` que re-chequea stock en IndexedDB y valida:
-    - agotado (stockAvailable <= 0)
-    - máximo disponible por producto
-    - máximo total en carrito (desiredQty no puede exceder stock)
-  - [ ] usar esta lógica tanto en `addItem` (currentQty+1) como en `updateQuantity`.
-- [ ] 2.2 Asegurar mensajes claros cuando se alcance límite (incluyendo stock disponible).
-- [ ] 2.3 Validar edge cases:
-  - [ ] stock cambia durante sesión (si falla re-chequeo, bloquear/capar)
-  - [ ] productos agotados
-  - [ ] sincronización/flush concurrente mientras usuario está en carrito
-- [ ] 2.4 `src/components/ProductGrid/ProductGrid.tsx`: mantener el disabled como ayuda visual; la verdad de límites debe estar en `cartStore`.
+---
 
-## Problema 3: Gráficas de ventas realizadas
-- [ ] 3.1 Revisar `src/screens/ReportsScreen/ReportsScreen.tsx`:
-  - [ ] conservar filtros `day/week/month` y update en tiempo real (sin recargar página)
-  - [ ] validar períodos vacíos (estado específico, sin errores)
-- [ ] 3.2 Añadir “gráfica interactiva” para productos más vendidos:
-  - [ ] barra SVG por producto según cantidad (top list filtrada por período)
-  - [ ] hover/tooltip similar al de la gráfica de línea (opcional si encaja con estilo actual)
+## 1. Capa de datos (IndexedDB)
 
-## Integración y verificación
-- [ ] 4.1 Ejecutar `npm run typecheck` (si existe) o `npm run build`.
-- [ ] 4.2 Ejecutar `npm run build`.
-- [ ] 4.3 Validar manualmente:
-  - [ ] vender sin imprimir: debe encolarse y sincronizarse al estar online
-  - [ ] click rápido en producto: no debe superar el stock
-  - [ ] cambiar período en reportes: gráficos cambian sin recargar
+- [ ] **1.1 Nuevo object store `inventory_movements`** en `src/db/index.ts`
+  - schema: `{ id, productId, type: 'in' | 'out' | 'adjustment', quantity, reason, reference?, timestamp, userId? }`
+  - keyPath: `'id'`
+  - indexes: `'by-product'`, `'by-timestamp'`, `'by-type'`
+  - incrementar DB_VERSION a 2 con upgrade path
 
+- [ ] **1.2 Crear `src/db/inventory.ts`** con operaciones CRUD:
+  - `getMovementsByProduct(productId)` — historial de movimientos de un producto
+  - `getMovementsByDateRange(from, to)` — filtrar por fecha
+  - `recordMovement(productId, type, quantity, reason, reference?)` — registrar + ajustar stock en transaction atómica
+  - `getLowStockProducts(threshold?)` — productos con stock <= umbral
+  - `getInventoryValue()` — valor total del inventario (stock * precio)
+
+## 2. Store (estado global)
+
+- [ ] **2.1 Crear `src/store/inventoryStore.ts`** (Zustand):
+  - State: `products[]`, `movements[]`, `isLoading`, `error`, `filter`, `sortBy`
+  - Actions: `loadProducts()`, `loadMovements(productId)`, `addProduct(product)`, `updateProduct(product)`, `deleteProduct(id)`, `adjustStock(productId, quantity, reason)`, `setFilter(query)`, `setSort(column, dir)`
+
+## 3. Pantalla de inventario
+
+- [ ] **3.1 Crear `src/screens/InventoryScreen/InventoryScreen.tsx`** con layout:
+  - **Encabezado**: título "Inventario", botón "Nuevo producto", botón "Ajustar stock", búsqueda
+  - **Tabla de productos**: columnas: Nombre, Categoría, Precio, Stock, Valor inventario, Última actualización, Acciones
+  - **Panel lateral** (o modal) para detalle de producto + historial de movimientos
+  - Estados: carga (skeleton), vacío ("No hay productos — agrega tu primer producto"), error
+
+- [ ] **3.2 Crear `src/screens/InventoryScreen/InventoryScreen.css`** (co-located, sigue los patrones de `--var` existentes)
+
+## 4. Componentes reutilizables
+
+- [ ] **4.1 `src/components/InventoryTable/InventoryTable.tsx`**:
+  - Tabla responsive con sort por columna (click en header)
+  - Badge de stock bajo (rojo si stock <= 5, amarillo si <= 10)
+  - Acciones por fila: editar, ajustar stock, eliminar (con confirmación)
+  - Paginación inline
+
+- [ ] **4.2 `src/components/ProductForm/ProductForm.tsx`**:
+  - Modal/formulario para crear/editar producto
+  - Campos: nombre, categoría (select), precio, stock inicial, código de barras, descripción
+  - Validación: nombre requerido, precio > 0, stock >= 0
+  - Modo "crear" vs "editar" (precarga datos)
+
+- [ ] **4.3 `src/components/StockAdjustModal/StockAdjustModal.tsx`**:
+  - Modal para ajustar stock de un producto existente
+  - Tipo: entrada (+), salida (-), ajuste manual
+  - Cantidad, razón (select o libre), referencia opcional (nota, factura)
+  - Muestra stock actual + stock resultante
+
+- [ ] **4.4 `src/components/MovementHistory/MovementHistory.tsx`**:
+  - Timeline/historial de movimientos de un producto
+  - Muestra: fecha, tipo (icono + color), cantidad, razón, referencia
+  - Filtro por tipo de movimiento
+
+## 5. Integración en la app
+
+- [ ] **5.1 Agregar ruta `/inventory`** en `src/App.tsx`:
+  ```tsx
+  const InventoryScreen = lazy(() => import('./screens/InventoryScreen/InventoryScreen'))
+  ```
+  - Añadir `<Route path="/inventory" element={<InventoryScreen />} />`
+  - Mover Settings al final, agregar Inventory en la sidebar ANTES de Settings
+
+- [ ] **5.2 Agregar NavLink** en la sidebar de `src/App.tsx`:
+  - Ícono: `Package` (de lucide-react) — importar `Package`
+  - title: "Inventario"
+
+- [ ] **5.3 Actualizar `saveSale()`** en `src/db/sales.ts` para que también registre movimiento de salida:
+  - Al vender, llamar `recordMovement(productId, 'out', quantity, 'venta', saleId)`
+
+## 6. Funcionalidades adicionales
+
+- [ ] **6.1 Alerta de stock bajo** en `StatusBar`:
+  - Contar productos con stock bajo al cargar, mostrar badge si > 0
+  - Click navega a `/inventory` con filtro de stock bajo
+
+- [ ] **6.2 Vista de "Valor de inventario"**:
+  - KPI card en el encabezado: "$XX,XXX.00 valor total en inventario"
+  - Contar número de productos únicos y total de unidades
+
+- [ ] **6.3 Importar/exportar productos**:
+  - Botón "Importar CSV" con parser
+  - Botón "Exportar CSV" descarga de todos los productos
+  - Confirmación antes de importar (vista previa de cambios)
+
+- [ ] **6.4 Desactivar productos** (en lugar de eliminar):
+  - Campo `active: boolean` en Product (default true)
+  - Productos inactivos no aparecen en catálogo de venta
+  - Se muestran en inventario con indicador visual (tachado/badge)
+
+## 7. Verificación y calidad
+
+- [ ] **7.1 TypeScript**: asegurar tipos correctos en todos los archivos nuevos
+- [ ] **7.2 Prueba de build**: `npm run build` debe compilar sin errores
+- [ ] **7.3 Prueba manual**:
+  - Crear producto nuevo → aparece en catálogo de venta
+  - Editar producto → cambios reflejados al vender
+  - Ajustar stock manual → el límite en carrito respeta el nuevo stock
+  - Vender producto → stock decrementa y se registra movimiento
+  - Stock bajo → badge visible en StatusBar
+  - Importar CSV → productos creados correctamente

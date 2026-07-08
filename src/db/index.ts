@@ -1,12 +1,9 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb'
-import type { Product, Sale, SyncQueueItem } from '../types'
+import type { Product, Sale, SyncQueueItem, InventoryMovement } from '../types'
 
 /**
  * Schema de la base de datos IndexedDB.
- * Versión actual: 1
- *
- * Para añadir nuevos stores en el futuro, incrementar DB_VERSION
- * y agregar la migración en el bloque `upgrade`.
+ * Versión actual: 2
  */
 interface PosDB extends DBSchema {
   products: {
@@ -29,10 +26,19 @@ interface PosDB extends DBSchema {
     key: string
     value: SyncQueueItem
   }
+  inventory_movements: {
+    key: string
+    value: InventoryMovement
+    indexes: {
+      'by-product': string
+      'by-timestamp': string
+      'by-type': string
+    }
+  }
 }
 
 const DB_NAME = 'pos-vaquero'
-const DB_VERSION = 1
+const DB_VERSION = 2
 
 let dbInstance: IDBPDatabase<PosDB> | null = null
 
@@ -63,10 +69,13 @@ export async function getDB(): Promise<IDBPDatabase<PosDB>> {
         console.log('[DB] Base de datos inicializada (v1)')
       }
 
-      // ─── Migración v1 → v2 (ejemplo para el futuro) ───────────────────
-      // if (oldVersion < 2) {
-      //   db.createObjectStore('customers', { keyPath: 'id' })
-      // }
+      // ─── Migración v1 → v2 ──────────────────────────────────────────
+      if (oldVersion < 2) {
+        const movementsStore = db.createObjectStore('inventory_movements', { keyPath: 'id' })
+        movementsStore.createIndex('by-product', 'productId')
+        movementsStore.createIndex('by-timestamp', 'timestamp')
+        movementsStore.createIndex('by-type', 'type')
+      }
     },
 
     blocked() {

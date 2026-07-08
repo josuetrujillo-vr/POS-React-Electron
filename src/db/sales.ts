@@ -1,5 +1,6 @@
 import { getDB } from './index'
 import type { Sale, SaleStatus, SyncQueueItem } from '../types'
+import { recordMovement } from './inventory'
 
 /**
  * Capa de acceso a datos para ventas y cola de sincronización.
@@ -35,6 +36,10 @@ export async function saveSale(sale: Sale): Promise<void> {
   }
 
   await tx.done
+
+  for (const item of sale.items) {
+    await recordMovement(item.productId, 'out', item.quantity, 'venta', sale.id)
+  }
 }
 
 /** Obtiene una venta por su ID */

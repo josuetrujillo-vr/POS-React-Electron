@@ -80,7 +80,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, onAddProduct
 
   // Filtrado memoizado para evitar re-cómputos en cada render
   const filtered = useMemo(() => {
-    let result = productsWithImages
+    let result = productsWithImages.filter(p => p.active !== false)
     if (activeCategory !== 'all') {
       result = result.filter(p => p.category === activeCategory)
     }
