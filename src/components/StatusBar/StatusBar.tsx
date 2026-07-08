@@ -1,6 +1,8 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useSyncStore } from '../../store/syncStore'
 import { useAppConfigStore } from '../../store/configStore'
+import { useInventoryStore } from '../../store/inventoryStore'
 import { formatMXN } from '../../utils/formatCurrency'
 import './StatusBar.css'
 import icono from '../../assets/botas-wellington.png'
@@ -10,10 +12,15 @@ import icono from '../../assets/botas-wellington.png'
  * Muestra: nombre del negocio | estado de conexión | ventas pendientes | botón sync | hora
  */
 export const StatusBar: React.FC = () => {
+  const navigate = useNavigate()
   const { isOnline, isSyncing, pendingCount, lastSyncAt, forceSync } = useSyncStore()
   const businessName = useAppConfigStore(s => s.businessName)
+  const lowStockCount = useInventoryStore(s => s.lowStockCount)
+  const loadLowStockCount = useInventoryStore(s => s.loadLowStockCount)
 
   const [time, setTime] = React.useState(new Date())
+
+  React.useEffect(() => { loadLowStockCount() }, [])
 
   React.useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1_000)
@@ -52,6 +59,14 @@ export const StatusBar: React.FC = () => {
           >
             <span className={`sync-btn__icon ${isSyncing ? 'spinning' : ''}`}>⟳</span>
             <span>{isSyncing ? 'Sincronizando...' : `${pendingCount} pendiente${pendingCount > 1 ? 's' : ''}`}</span>
+          </button>
+        )}
+
+        {/* Stock bajo */}
+        {lowStockCount > 0 && (
+          <button className="sync-btn" onClick={() => navigate('/inventory')} title="Productos con stock bajo">
+            <span className="sync-btn__icon">!</span>
+            <span>{lowStockCount} producto{lowStockCount > 1 ? 's' : ''} bajo stock</span>
           </button>
         )}
 

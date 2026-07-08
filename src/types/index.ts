@@ -24,8 +24,24 @@ export interface Product {
   barcode?: string
   description?: string
   imageUrl?: string
+  active?: boolean
   createdAt: string
   updatedAt: string
+}
+
+// ─── Inventario ────────────────────────────────────────────────────────────
+
+export type MovementType = 'in' | 'out' | 'adjustment'
+
+export interface InventoryMovement {
+  id: string
+  productId: string
+  type: MovementType
+  quantity: number
+  reason: string
+  reference?: string
+  timestamp: string
+  userId?: string
 }
 
 // ─── Carrito ──────────────────────────────────────────────────────────────

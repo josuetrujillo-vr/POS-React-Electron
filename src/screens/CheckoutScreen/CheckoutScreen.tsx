@@ -4,6 +4,7 @@ import { ArrowLeft, Banknote, CreditCard, Smartphone, CheckCircle2, AlertTriangl
 import { useCartStore } from '../../store/cartStore'
 import { useSalesStore } from '../../store/salesStore'
 import { useSyncStore } from '../../store/syncStore'
+import { useInventoryStore } from '../../store/inventoryStore'
 import { saveSale, getLastSaleNumber } from '../../db/sales'
 import { getProductById } from '../../db/products'
 import { generateId, generateSaleNumber } from '../../utils/generateId'
@@ -136,11 +137,13 @@ const CheckoutScreen: React.FC = () => {
 
   const handleSuccessClose = () => {
     clear()
+    useInventoryStore.getState().loadLowStockCount()
     navigate('/history')
   }
 
   const handleNewSale = () => {
     clear()
+    useInventoryStore.getState().loadLowStockCount()
     navigate('/')
   }
 

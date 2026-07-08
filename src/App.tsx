@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect } from 'react'
 import { HashRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom'
-import { Store, ShoppingCart, Clock, Settings, BarChart3, AlertCircle, CheckCircle2, Info, X } from 'lucide-react'
+import { Store, ShoppingCart, Clock, Settings, BarChart3, AlertCircle, CheckCircle2, Info, X, Package } from 'lucide-react'
 import { StatusBar } from './components/StatusBar/StatusBar'
 import { useOnlineStatus } from './hooks/useOnlineStatus'
 import { seedProductsIfEmpty } from './db/seeds'
@@ -13,7 +13,8 @@ const SaleScreen     = lazy(() => import('./screens/SaleScreen/SaleScreen'))
 const CheckoutScreen = lazy(() => import('./screens/CheckoutScreen/CheckoutScreen'))
 const HistoryScreen  = lazy(() => import('./screens/HistoryScreen/HistoryScreen'))
 const ReportsScreen  = lazy(() => import('./screens/ReportsScreen/ReportsScreen'))
-const SettingsScreen = lazy(() => import('./screens/SettingsScreen/SettingsScreen'))
+const SettingsScreen  = lazy(() => import('./screens/SettingsScreen/SettingsScreen'))
+const InventoryScreen = lazy(() => import('./screens/InventoryScreen/InventoryScreen'))
 
 /**
  * Componente raíz de la aplicación.
@@ -89,6 +90,10 @@ const App: React.FC = () => {
               <BarChart3 size={20} />
             </NavLink>
 
+            <NavLink to="/inventory" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="Inventario">
+              <Package size={20} />
+            </NavLink>
+
             <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} title="Configuración" style={{ marginTop: 'auto' }}>
               <Settings size={20} />
             </NavLink>
@@ -101,6 +106,7 @@ const App: React.FC = () => {
               <Route path="/checkout" element={<CheckoutScreen />} />
               <Route path="/history"  element={<HistoryScreen />} />
               <Route path="/reports"  element={<ReportsScreen />} />
+              <Route path="/inventory" element={<InventoryScreen />} />
               <Route path="/settings" element={<SettingsScreen />} />
               <Route path="*"         element={<Navigate to="/" replace />} />
             </Routes>

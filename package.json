@@ -6,7 +6,9 @@
   "author": "Tu Negocio",
   "private": true,
   "scripts": {
-    "dev": "electron-vite dev",
+    "dev": "concurrently -n app,api \"electron-vite dev\" \"node server-local/index.js\"",
+    "dev:app": "electron-vite dev",
+    "dev:api": "node server-local/index.js",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
     "build:win": "electron-vite build && electron-builder --win"
@@ -28,6 +30,7 @@
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
     "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^10.0.3",
     "electron": "^28.2.0",
     "electron-builder": "^24.9.1",
     "electron-vite": "^2.0.0",
